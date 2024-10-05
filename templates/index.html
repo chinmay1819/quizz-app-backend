@@ -13,6 +13,10 @@
     <div id="result"></div>
 
     <script>
+        let username = prompt("Enter your username:");
+        while (!username) {
+            username = prompt("Username is required. Please enter your username:");
+        }
         const ws = new WebSocket("ws://localhost:8000/ws");
 
         ws.onmessage = function(event) {
@@ -25,7 +29,10 @@
 
         document.getElementById('submit').onclick = function() {
             const answer = document.getElementById('answer').value;
-            ws.send(JSON.stringify({ "answer": answer }));
+            ws.send(JSON.stringify({
+                "answer": answer,
+                "username":username
+            }));
         };
     </script>
 </body>

@@ -89,7 +89,7 @@ async def quiz_endpoint(websocket:WebSocket):
                 data = await websocket.receive_text()
                 json_data = json.loads(data)
                 answer = json_data.get("answer")
-
+                username = json_data.get("username")
                 solution = await redis.get("current_solution")
                 print("solution from redis = ",solution)
                 current_winner = await redis.get("current_winner")
@@ -101,10 +101,10 @@ async def quiz_endpoint(websocket:WebSocket):
 
                 #processing answer
                 if answer and int(answer) == int(solution):
-                    is_first = await redis.setnx("current_winner",str(websocket.client))
+                    is_first = await redis.setnx("current_winner",username)
                     if is_first:
-                        await manager.broadcast(f"Winner: {websocket.client}")
-                        logging.info(f"Winner is {websocket.client}")
+                        await manager.broadcast(f"Winner: {username}")
+                        logging.info(f"Winner is {username}")
                         await asyncio.sleep(3)
                         new_problem = await generate_new_problem(redis=redis)
                         await manager.broadcast(f"New problem:{new_problem}")
