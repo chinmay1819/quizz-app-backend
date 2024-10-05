@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>WebSocket Example</title>
-    </head>
-    <body>
-        
-        <h1>WebSocket Test</h1>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off" style="width: 500px; height: 40px;"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            var ws = new WebSocket("ws://127.0.0.1:8000/ws");
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                var message = {
-                    answer:input.value,
-                    username:'John'
-                }
-                ws.send(JSON.stringify(message))
-                input.value = ''
-                event.preventDefault()
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+</head>
+<body>
+    <h1>Math Quiz</h1>
+    <div id="problem">Waiting for problem...</div>
+    <input type="text" id="answer" placeholder="Enter your answer">
+    <button id="submit">Submit</button>
+    <div id="result"></div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws");
+
+        ws.onmessage = function(event) {
+            const data = event.data;
+            document.getElementById('result').textContent = data;
+            if (data.startsWith('New Problem')) {
+                document.getElementById('problem').textContent = data;
             }
-        </script>
-    </body>
+        };
+
+        document.getElementById('submit').onclick = function() {
+            const answer = document.getElementById('answer').value;
+            ws.send(JSON.stringify({ "answer": answer }));
+        };
+    </script>
+</body>
 </html>

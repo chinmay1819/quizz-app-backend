@@ -8,7 +8,7 @@ logging.basicConfig(
     level=logging.INFO, 
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("app.log"), 
+        logging.FileHandler(Constants.file_to_write_logs), 
         logging.StreamHandler()         
     ]
 )
@@ -29,12 +29,18 @@ class ConnectionManager:
     def show_connections(self):
         return self.active_connections
 
-    async def broadcast(self, message: bytes, sender: WebSocket):
+    async def broadcast(self, message: bytes):
         for connection in self.active_connections:
-            logging.info(f" message sent to sender = {connection}")
+            logging.info(f" Message sent to sender : {connection}")
             response_json = {
                 "answer":message
             }
             await connection.send_bytes(json.dumps(response_json))
 
-
+    async def send_current_problem(self, websocket: WebSocket, redis):
+        """Send the current math problem to the connected WebSocket."""
+        current_problem = await redis.get("current_problem")
+        if current_problem:
+            await websocket.send_text(f"Current Problem: {current_problem}")
+        else:
+            await websocket.send_text("No problem available currently.")
