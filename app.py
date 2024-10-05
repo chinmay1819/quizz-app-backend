@@ -28,7 +28,7 @@ logging.basicConfig(
 # Define a custom lifespan context to handle resource initialization/cleanup
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    redis = aioredis.Redis.from_url("redis://localhost", decode_responses=True)
+    redis = aioredis.Redis.from_url("redis://redis", decode_responses=True)
     app.state.redis = redis
     await QuizService.generate_new_problem(redis)
     yield {"redis": redis}
