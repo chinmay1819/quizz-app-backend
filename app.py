@@ -53,6 +53,6 @@ app.add_middleware(
 app.include_router(websocket_router)
 
 
-@app.get("/")
-async def get():
-    return FileResponse("templates/index.html")
+# @app.get("/")
+# async def get():
+#     return FileResponse("templates/index.html")
